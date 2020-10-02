@@ -22,8 +22,13 @@ from utils_ephys import extract_tuning_curve
 plt.close('all')
 
 start_frame = 500 # start at this frame index
-n_frames = 50 # num frames to write
-write_movie_fps = 30 # fps of resulting movie (SHOULD = MOVIE FRAMERATE?)
+dpi = 50
+n_frames = 300 # num frames to write
+write_movie_fps = 10 # fps of resulting movie (SHOULD = MOVIE FRAMERATE?)
+
+x_lim = (-1,1)
+y_lim = (-1,3)  # @todo: determine automatically?
+
 
 vis_stim_file = r'Z:\rozsam\raw\visual_stim\20200831-anm479116\Cell3_Run03\31-Aug-2020_11_51_11_03.mat'
 h5_file = r'Z:\rozsam\raw\ephys\20200831-anm479116\Cell3\cell3_stim03_0001.h5'
@@ -38,9 +43,10 @@ ephys_out = extract_tuning_curve(h5_file, vis_stim_file)
 ephys_t_s = ephys_out['ephys_t']
 ophys_t_s = ephys_out['frame_times']
 dFF = np.load(dff_file)
-frame_sRate =  1/np.mean(np.diff(ophys_t_s))
+ophys_sRate =  1/np.mean(np.diff(ophys_t_s))
+ephys_sRate = 1/np.mean(np.diff(ephys_t_s))
 end_frame = start_frame + n_frames
-start_s, end_s = np.array([start_frame, end_frame])/frame_sRate
+start_s, end_s = np.array([start_frame, end_frame])/ophys_sRate
 
 
 # combined and cropped tif file of cell-attached recording
@@ -62,9 +68,6 @@ ax1.axis("off")
 line, = ax2.plot([], [], lw=2)
 
 
-x_lim = (-2,2)
-y_lim = (-1,3)  # @todo: determine automatically?
-
 ax2.set_xlim(x_lim)
 ax2.set_ylim(y_lim)
 ax2.set_aspect((x_lim[1]-x_lim[0]) / (y_lim[1]-y_lim[0])) # make sure plot is square, should be xlim / ylim
@@ -79,13 +82,14 @@ plt.rcParams['animation.ffmpeg_path'] = ff_path
 
 # always playing movie @30 FPS
 # @todo: may need to address case where write_movie_fps != recording fps
-indices_to_shift = np.where(ephys_t_s <= 1/write_movie_fps,1,0).sum() # how many indices to shift every movie frame
-with FFwriter.saving(fig, movie_write_dir, n_frames):
+
+indices_to_shift = np.where(ephys_t_s <= 1/ophys_sRate,1,0).sum() # how many indices to shift every movie frame
+with FFwriter.saving(fig, movie_write_dir, dpi):
     for i, frame_i in enumerate(frame_iter):
         ax1.imshow(stream[frame_i,:,:], extent=[0,100,0,1], aspect=100, cmap='gray')
         
-        x = ophys_t_s - ophys_t_s[start_frame] - i
-        y = np.roll(dFF, i)
+        x = ophys_t_s - ophys_t_s[start_frame]  # - i/ophys_sRate
+        y = np.roll(dFF, -1*i)
         line.set_data(x, y)
         FFwriter.grab_frame()
         print("done grabbing frame {}".format(i))
