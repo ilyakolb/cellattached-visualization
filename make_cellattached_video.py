@@ -24,7 +24,7 @@ plt.close('all')
 invert_colors = True # True for white on black background
 start_frame = 2450 # start at this frame index
 dpi = 100
-n_frames = 100 # num frames to write
+n_frames = 200 # num frames to write
 write_movie_fps = 30 # fps of resulting movie
 
 speed = 1 # (int) set to 1 for regular speed, >1 for faster. speed > 1 results in jitteriness
@@ -70,7 +70,7 @@ fig = plt.figure(figsize=[6,3])
 # figure color
 # fig.patch.set_facecolor('black' if invert_colors else 'white')
 ax1,ax2 = fig.subplots(1,2)
-ax1.imshow(stream[0,:,:], extent=[0,100,0,1], aspect=100, cmap='gray')
+ax1.imshow(stream[0,:,:], extent=[0,100,0,1], aspect=100, cmap='gray', vmin=stream.min(), vmax=stream.max())
 ax1.axis("off")
 
 line, = ax2.plot(ophys_t_s - ophys_t_s[start_frame], dFF, 'w-' if invert_colors else 'k-', lw=2)
@@ -101,7 +101,7 @@ with FFwriter.saving(fig, movie_write_dir, dpi):
     for i, frame_i in enumerate(frame_iter):
         
         # draw cell image
-        ax1.imshow(stream[frame_i,:,:], extent=[0,100,0,1], aspect=100, cmap='gray')
+        ax1.imshow(stream[frame_i,:,:], extent=[0,100,0,1], aspect=100, cmap='gray', vmin=stream.min(), vmax=stream.max())
         
         # plot ophys trace
         line.set_xdata(ophys_t_s - ophys_t_s[frame_i])
