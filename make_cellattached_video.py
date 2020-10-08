@@ -21,7 +21,7 @@ import warnings
 from utils_ephys import extract_tuning_curve
 
 def make_video(stream_file_dir, h5_file_dir, vis_stim_file_dir, dFF_file_dir, movie_write_dir = "out.mp4", \
-               start_frame = 0, n_frames = 100, dpi = 100, write_movie_fps = 30, speed = 1, invert_colors = False):
+               start_s = 0, end_s = 2, dpi = 100, write_movie_fps = 30, speed = 1, invert_colors = False):
     '''
     make_video
     ----------
@@ -34,9 +34,9 @@ def make_video(stream_file_dir, h5_file_dir, vis_stim_file_dir, dFF_file_dir, mo
         dFF_file_dir: dir to dFF.npy file
         movie_write_dir: mp4 file to write
         invert_colors (bool) # True for white on black background
-        start_frame (int)# start at this frame index
+        start_s (float)# start at this time
+        end_s (float)# end at this time
         dpi (int) # output movie dpi
-        n_frames (int) # num frames to write
         write_movie_fps = 30 # fps of resulting movie
         speed (int) # set to 1 for regular speed, >1 for faster. NOTE: speed > 1 results in jitteriness
     
@@ -56,8 +56,9 @@ def make_video(stream_file_dir, h5_file_dir, vis_stim_file_dir, dFF_file_dir, mo
     ap_idx = ephys_out['ap_idx']
     dFF = np.load(dFF_file_dir)
     ophys_sRate =  1/np.mean(np.diff(ophys_t_s))
-    end_frame = start_frame + n_frames
-    start_s, end_s = np.array([start_frame, end_frame])/ophys_sRate
+    start_frame, end_frame = np.array([start_s, end_s]) * ophys_sRate
+    n_frames = end_frame - start_frame
+    # start_s, end_s = np.array([start_frame, end_frame])/ophys_sRate
     
     
     # combined and cropped tif file of cell-attached recording

@@ -6,7 +6,63 @@ from scipy import signal
 from scipy.io import loadmat
 import scipy.ndimage as ndimage
 import numpy as np
+import glob, os
 
+def find_directories(row, ephys_dir, vis_dir, suite2p_dir):
+    '''
+    returns directories of recording in row
+    
+    Parameters
+    ----------
+    row : pandas Series
+        row containing 'load' column used to extract session info.
+    ephys_dir : path
+        default dir for ephys (eg 'Z:/rozsam/raw/ephys').
+    vis_dir : path
+        default dir for visual stim (eg 'Z:/rozsam/raw/visual_stim').
+    suite2p_dir : path
+        default dir for suite2p and dFF (eg 'Z:/rozsam/suite2p').
+
+    Returns
+    -------
+    (stream_file, h5_file, vis_file, movie_name)
+
+    '''
+    
+    # execute row['load'] to get session/subject/cell/runnum/roi_num
+    n = {}
+    exec(row['load'], n)
+    
+    
+    stream_file = os.path.join(suite2p_dir, '{}-anm{}'.format(n['session'], n['subject']), 'Cell{}'.format(n['cell']), 'cell{}_stim{:02d}_*'.format(int(n['cell']), n['runnum'][0]), 'plane0', 'reg_tif', 'combo_square_adjLUT.tif')
+    g = glob.glob(stream_file)
+    try:
+        stream_file = g[0]
+    except:
+        print('WARNING: stream file missing: {}'.format(stream_file))
+        stream_file = []
+    
+    h5_file = os.path.join(ephys_dir, '{}-anm{}'.format(n['session'], n['subject']), 'Cell{}'.format(n['cell']), 'cell{}_stim{:02d}_*.h5'.format(int(n['cell']), n['runnum'][0]))
+    g = glob.glob(h5_file)
+    try:
+        h5_file = g[0]
+    except:
+        print('WARNING: h5 file missing: {}'.format(h5_file))
+        h5_file = []
+    
+    # vis stim file is sometimes Cell01 and sometimes Cell1
+    vis_file = os.path.join(vis_dir, '{}-anm{}'.format(n['session'], n['subject']), 'Cell{}_Run{:02d}'.format(int(n['cell']), n['runnum'][0]), '*.mat')
+    vis_file_2 = os.path.join(vis_dir, '{}-anm{}'.format(n['session'], n['subject']), 'Cell{:02d}_Run{:02d}'.format(int(n['cell']), n['runnum'][0]), '*.mat')
+    
+    g = glob.glob(vis_file_2) if not glob.glob(vis_file) else glob.glob(vis_file)
+    try:
+        vis_file = g[0]
+    except:
+        print('WARNING: vis stim file missing: {}'.format(vis_file))
+        vis_file = []
+    
+    movie_file = '{}-anm{}_cell{}_run{}_startAt_{}s_endAt_{}s.mp4'.format(n['session'],n['subject'],n['cell'],n['runnum'],row['start s'], row['end s'])
+    return (stream_file, h5_file, vis_file, movie_file)
 
 
 def rollingfun(y, window = 10, func = 'mean'):
