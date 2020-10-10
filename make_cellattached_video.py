@@ -56,7 +56,7 @@ def make_video(stream_file_dir, h5_file_dir, vis_stim_file_dir, dFF_file_dir, mo
     ap_idx = ephys_out['ap_idx']
     dFF = np.load(dFF_file_dir)
     ophys_sRate =  1/np.mean(np.diff(ophys_t_s))
-    start_frame, end_frame = np.array([start_s, end_s]) * ophys_sRate
+    start_frame, end_frame = np.array([int(start_s * ophys_sRate), int(end_s * ophys_sRate)])
     n_frames = end_frame - start_frame
     # start_s, end_s = np.array([start_frame, end_frame])/ophys_sRate
     
@@ -117,5 +117,5 @@ def make_video(stream_file_dir, h5_file_dir, vis_stim_file_dir, dFF_file_dir, mo
             stopwatch.set_text('t= {} s'.format(round(frame_i/ophys_sRate - ophys_t_s[start_frame], 2)))
             
             FFwriter.grab_frame()
-            print("{}/{}: done grabbing frame {}".format(i, n_frames, frame_i))
+            print("{}/{}: done grabbing frame {}".format(i+1, n_frames, frame_i))
         print('DONE')
