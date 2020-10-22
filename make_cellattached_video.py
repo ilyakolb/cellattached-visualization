@@ -21,7 +21,7 @@ import warnings
 from utils_ephys import extract_tuning_curve
 
 def make_video(stream_file_dir, h5_file_dir, vis_stim_file_dir, dFF_file_dir, movie_write_dir = "out.mp4", \
-               start_s = 0, end_s = 2, dpi = 100, write_movie_fps = 30, speed = 1, invert_colors = False):
+               start_s = 0, end_s = 2, dpi = 100, write_movie_fps = 30, speed = 1, invert_colors = False, preview_mode = True):
     '''
     make_video
     ----------
@@ -39,7 +39,8 @@ def make_video(stream_file_dir, h5_file_dir, vis_stim_file_dir, dFF_file_dir, mo
         dpi (int) # output movie dpi
         write_movie_fps = 30 # fps of resulting movie
         speed (int) # set to 1 for regular speed, >1 for faster. NOTE: speed > 1 results in jitteriness
-    
+        preview_mode (bool): True to write a preview file where only e.g. 2 secs of video get recorded
+        
     OUTPUTS:
         writes movie mp4 to movie_write_dir
     '''
@@ -50,6 +51,10 @@ def make_video(stream_file_dir, h5_file_dir, vis_stim_file_dir, dFF_file_dir, mo
     else:
         plt.style.use('default')
     
+    if preview_mode:
+        print("Preview mode on!")
+        end_s = start_s + 2 # 2 seconds for preview
+    
     ephys_out = extract_tuning_curve(h5_file_dir, vis_stim_file_dir)
     ephys_t_s = ephys_out['ephys_t']
     ophys_t_s = ephys_out['frame_times']
@@ -58,7 +63,6 @@ def make_video(stream_file_dir, h5_file_dir, vis_stim_file_dir, dFF_file_dir, mo
     ophys_sRate =  1/np.mean(np.diff(ophys_t_s))
     start_frame, end_frame = np.array([int(start_s * ophys_sRate), int(end_s * ophys_sRate)])
     n_frames = end_frame - start_frame
-    # start_s, end_s = np.array([start_frame, end_frame])/ophys_sRate
     
     
     # combined and cropped tif file of cell-attached recording
@@ -74,7 +78,7 @@ def make_video(stream_file_dir, h5_file_dir, vis_stim_file_dir, dFF_file_dir, mo
     fig = plt.figure(figsize=[6,3])
 
     ax1,ax2 = fig.subplots(1,2)
-    ax1.imshow(stream[0,:,:], extent=[0,100,0,1], aspect=100, cmap='gray', vmin=stream.min(), vmax=stream.max())
+    ax1.imshow(stream[0,:,:], extent=[0,100,0,1], aspect=100, cmap='gray') #, vmin=stream.min(), vmax=stream.max())
     ax1.axis("off")
     
     line, = ax2.plot(ophys_t_s - ophys_t_s[start_frame], dFF, 'w-' if invert_colors else 'k-', lw=2)

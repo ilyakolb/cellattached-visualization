@@ -8,7 +8,7 @@ import scipy.ndimage as ndimage
 import numpy as np
 import glob, os
 
-def find_directories(row, ephys_dir, vis_dir, suite2p_dir):
+def find_directories(row, ephys_dir, vis_dir, suite2p_dir, preview_mode):
     '''
     returns directories of recording in row
     
@@ -22,6 +22,7 @@ def find_directories(row, ephys_dir, vis_dir, suite2p_dir):
         default dir for visual stim (eg 'Z:/rozsam/raw/visual_stim').
     suite2p_dir : path
         default dir for suite2p and dFF (eg 'Z:/rozsam/suite2p').
+    preview_mode (bool): True to write a preview file where only e.g. 2 secs of video get recorded
 
     Returns
     -------
@@ -34,6 +35,8 @@ def find_directories(row, ephys_dir, vis_dir, suite2p_dir):
     exec(row['load'], n)
     n['cell'] = n['cell'][0]
     n['runnum'] = n['runnum'][0]
+    
+    full_or_preview = 'preview' if preview_mode else 'full'
     
     stream_file = os.path.join(suite2p_dir, '{}-anm{}'.format(n['session'], n['subject']), 'Cell{}'.format(n['cell']), 'cell{}_stim{:02d}_*'.format(int(n['cell']), n['runnum']), 'plane0', 'reg_tif', 'combo.tif')
     g = glob.glob(stream_file)
@@ -70,7 +73,7 @@ def find_directories(row, ephys_dir, vis_dir, suite2p_dir):
         print('WARNING: dFF file missing: {}'.format(dff_file))
         dff_file = []
     
-    movie_file = '{}-anm{}_cell{}_run{}_startAt_{}s_endAt_{}s.mp4'.format(n['session'],n['subject'],n['cell'],n['runnum'],row['start s'], row['end s'])
+    movie_file = '{}-anm{}_cell{}_run{}_startAt_{}s_endAt_{}s_{}.mp4'.format(n['session'],n['subject'],n['cell'],n['runnum'],row['start s'], row['end s'], full_or_preview)
     return (stream_file, h5_file, vis_file, dff_file, movie_file)
 
 
