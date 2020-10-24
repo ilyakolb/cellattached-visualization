@@ -8,7 +8,7 @@ import scipy.ndimage as ndimage
 import numpy as np
 import glob, os
 
-def find_directories(row, ephys_dir, vis_dir, suite2p_dir, preview_mode):
+def find_directories(row, ephys_dir, vis_dir, suite2p_dir, preview_mode, sensor_str):
     '''
     returns directories of recording in row
     
@@ -23,7 +23,8 @@ def find_directories(row, ephys_dir, vis_dir, suite2p_dir, preview_mode):
     suite2p_dir : path
         default dir for suite2p and dFF (eg 'Z:/rozsam/suite2p').
     preview_mode (bool): True to write a preview file where only e.g. 2 secs of video get recorded
-
+    sensor_str (str): sensor string (e.g. 688) from sensor_list in batch_process
+    
     Returns
     -------
     (stream_file, h5_file, vis_file, dff_file, movie_name)
@@ -73,7 +74,7 @@ def find_directories(row, ephys_dir, vis_dir, suite2p_dir, preview_mode):
         print('WARNING: dFF file missing: {}'.format(dff_file))
         dff_file = []
     
-    movie_file = '{}-anm{}_cell{}_run{}_startAt_{}s_endAt_{}s_{}.mp4'.format(n['session'],n['subject'],n['cell'],n['runnum'],row['start s'], row['end s'], full_or_preview)
+    movie_file = 'sensor_{}_{}-anm{}_cell{}_run{}_startAt_{}s_endAt_{}s_{}.mp4'.format(sensor_str, n['session'],n['subject'],n['cell'],n['runnum'],row['start s'], row['end s'], full_or_preview)
     return (stream_file, h5_file, vis_file, dff_file, movie_file)
 
 

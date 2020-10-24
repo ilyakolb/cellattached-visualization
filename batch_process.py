@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 # batch create imaging/ephys combined videos
 from make_cellattached_video import make_video
 import pandas as pd
@@ -7,7 +8,7 @@ import os
 from utils import find_directories
 
 preview = True # True to enable preview mode (2 secs of video)
-sensor_list = {'688'}# {'686', '688', '456', 'XCaMP', '7f'}
+sensor_list = {'686'}# {'686', '688', '456', 'XCaMP', '7f'}
 main_movieout_dir = 'F:\jgcamp8_movies\output'
 ephys_basedir = r'Z:\rozsam\raw\ephys'
 vis_stim_basedir = r'Z:\rozsam\raw\visual_stim'
@@ -20,7 +21,7 @@ for sensor in sensor_list:
             print('Ignoring row {}'.format(i))
         else:
             print(i)
-            stream_f, h5_f, vis_f, dff_f, movie_f = find_directories(row, ephys_basedir, vis_stim_basedir, suite2p_basedir)
+            stream_f, h5_f, vis_f, dff_f, movie_f = find_directories(row, ephys_basedir, vis_stim_basedir, suite2p_basedir, preview, sensor)
             
             if not stream_f or not h5_f or not vis_f or not dff_f:
                 print('Skipping!')

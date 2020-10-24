@@ -118,7 +118,7 @@ def make_video(stream_file_dir, h5_file_dir, vis_stim_file_dir, dFF_file_dir, mo
             ap_ticks.set_xdata(ephys_t_s[ap_idx] - ophys_t_s[frame_i])
             
             # update stopwatch
-            stopwatch.set_text('t= {} s'.format(round(frame_i/ophys_sRate - ophys_t_s[start_frame], 2)))
+            stopwatch.set_text('t= {:.2f} s'.format(round(frame_i/ophys_sRate - ophys_t_s[start_frame], 2)))
             
             FFwriter.grab_frame()
             print("{}/{}: done grabbing frame {}".format(i+1, n_frames, frame_i))
