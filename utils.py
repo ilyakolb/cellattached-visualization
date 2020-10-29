@@ -8,7 +8,7 @@ import scipy.ndimage as ndimage
 import numpy as np
 import glob, os
 
-def find_directories(row, ephys_dir, vis_dir, suite2p_dir, preview_mode, sensor_str):
+def find_directories(row, ephys_dir, vis_dir, suite2p_dir, preview_mode, sensor_str, invert = False):
     '''
     returns directories of recording in row
     
@@ -24,10 +24,11 @@ def find_directories(row, ephys_dir, vis_dir, suite2p_dir, preview_mode, sensor_
         default dir for suite2p and dFF (eg 'Z:/rozsam/suite2p').
     preview_mode (bool): True to write a preview file where only e.g. 2 secs of video get recorded
     sensor_str (str): sensor string (e.g. 688) from sensor_list in batch_process
-    
+    invert (bool): True if video is on black background. Normally, white bg
+        
     Returns
     -------
-    (stream_file, h5_file, vis_file, dff_file, movie_name)
+    (stream_file, h5_file, vis_file, dff_file, movie_file)
 
     '''
     
@@ -37,6 +38,7 @@ def find_directories(row, ephys_dir, vis_dir, suite2p_dir, preview_mode, sensor_
     n['cell'] = n['cell'][0]
     n['runnum'] = n['runnum'][0]
     
+    bg_style = 'blackBg' if invert else 'whiteBg'
     full_or_preview = 'preview' if preview_mode else 'full'
     
     stream_file = os.path.join(suite2p_dir, '{}-anm{}'.format(n['session'], n['subject']), 'Cell{}'.format(n['cell']), 'cell{}_stim{:02d}_*'.format(int(n['cell']), n['runnum']), 'plane0', 'reg_tif', 'combo.tif')
@@ -74,7 +76,7 @@ def find_directories(row, ephys_dir, vis_dir, suite2p_dir, preview_mode, sensor_
         print('WARNING: dFF file missing: {}'.format(dff_file))
         dff_file = []
     
-    movie_file = 'sensor_{}_{}-anm{}_cell{}_run{}_startAt_{}s_endAt_{}s_{}.mp4'.format(sensor_str, n['session'],n['subject'],n['cell'],n['runnum'],row['start s'], row['end s'], full_or_preview)
+    movie_file = 'sensor_{}_{}-anm{}_cell{}_run{}_startAt_{}s_endAt_{}s_{}_{}.mp4'.format(sensor_str, n['session'],n['subject'],n['cell'],n['runnum'],row['start s'], row['end s'], full_or_preview, bg_style)
     return (stream_file, h5_file, vis_file, dff_file, movie_file)
 
 
