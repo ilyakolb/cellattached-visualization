@@ -38,7 +38,7 @@ def make_video(stream_file_dir, h5_file_dir, vis_stim_file_dir, dFF_file_dir, mo
         end_s (float)# end at this time
         dpi (int) # output movie dpi
         write_movie_fps = 30 # fps of resulting movie
-        speed (int) # set to 1 for regular speed, >1 for faster. NOTE: speed > 1 results in jitteriness
+        speed (int) # set to 1 for regular speed, >1 for faster.
         preview_mode (bool): True to write a preview file where only e.g. 2 secs of video get recorded
         
     OUTPUTS:
@@ -53,7 +53,7 @@ def make_video(stream_file_dir, h5_file_dir, vis_stim_file_dir, dFF_file_dir, mo
     
     if preview_mode:
         print("Preview mode on!")
-        end_s = start_s + 2 # 2 seconds for preview
+        end_s = start_s + 4 # 2 seconds for preview
     
     ephys_out = extract_tuning_curve(h5_file_dir, vis_stim_file_dir)
     ephys_t_s = ephys_out['ephys_t']
@@ -82,7 +82,7 @@ def make_video(stream_file_dir, h5_file_dir, vis_stim_file_dir, dFF_file_dir, mo
     ax1.axis("off")
     
     line, = ax2.plot(ophys_t_s - ophys_t_s[start_frame], dFF, 'w-' if invert_colors else 'k-', lw=2)
-    ap_ticks, = ax2.plot(ephys_t_s[ap_idx],np.ones(len(ap_idx))*np.max(dFF)*-0.1,'r|')
+    ap_ticks, = ax2.plot(ephys_t_s[ap_idx],np.ones(len(ap_idx))*np.max(dFF)*-0.1,'r|', markersize=9, mew=2)
     stopwatch = ax2.text(0.65,0.9,'t = 0 s',ha='left', va='top', weight='bold', size=14, transform=ax2.transAxes)
     
     x_lim = (-1,1)

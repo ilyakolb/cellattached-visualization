@@ -8,7 +8,7 @@ import scipy.ndimage as ndimage
 import numpy as np
 import glob, os
 
-def find_directories(row, ephys_dir, vis_dir, suite2p_dir, preview_mode, sensor_str, invert = False):
+def find_directories(row, ephys_dir, vis_dir, suite2p_dir, preview_mode, sensor_str, speed, invert = False):
     '''
     returns directories of recording in row
     
@@ -25,7 +25,7 @@ def find_directories(row, ephys_dir, vis_dir, suite2p_dir, preview_mode, sensor_
     preview_mode (bool): True to write a preview file where only e.g. 2 secs of video get recorded
     sensor_str (str): sensor string (e.g. 688) from sensor_list in batch_process
     invert (bool): True if video is on black background. Normally, white bg
-        
+    speed (int): set to 1 for regular speed, >1 for faster. 3 for real-time speed at 120 Hz
     Returns
     -------
     (stream_file, h5_file, vis_file, dff_file, movie_file)
@@ -76,7 +76,7 @@ def find_directories(row, ephys_dir, vis_dir, suite2p_dir, preview_mode, sensor_
         print('WARNING: dFF file missing: {}'.format(dff_file))
         dff_file = []
     
-    movie_file = 'sensor_{}_{}-anm{}_cell{}_run{}_startAt_{}s_endAt_{}s_{}_{}.mp4'.format(sensor_str, n['session'],n['subject'],n['cell'],n['runnum'],row['start s'], row['end s'], full_or_preview, bg_style)
+    movie_file = 'sensor_{}_{}-anm{}_cell{}_run{}_startAt_{}s_endAt_{}s_speed={}_{}_{}.mp4'.format(sensor_str, n['session'],n['subject'],n['cell'],n['runnum'],row['start s'], row['end s'], speed, full_or_preview, bg_style)
     return (stream_file, h5_file, vis_file, dff_file, movie_file)
 
 
