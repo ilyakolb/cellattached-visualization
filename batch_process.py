@@ -8,7 +8,7 @@ import os
 from utils import find_directories
 
 speedup_factor = 3 # 1 for regular speed (30 FPS), 3 for close to real time (120 Hz)
-preview = True # True to enable preview mode (2 secs of video)
+preview = False # True to enable preview mode (2 secs of video)
 black_bg = True # True toinvert colors and make movies on black background
 sensor_list = {'688'}# {'686', '688', '456', 'XCaMP', '7f'}
 main_movieout_dir = 'F:\jgcamp8_movies\output'
